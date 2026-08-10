@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KaRMA — A Kinematic Metric for Fine Manipulation Ability in Robotic Hands</title>
+<meta name="description" content="KaRMA is a kinematics-only metric for fine manipulation in robotic hands. It scores how far a hand can translate and reorient a pinched sphere through feasible rolling contact, computed from a URDF alone, across 16 hands.">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Improbable AI Lab, MIT">
+<meta property="og:title" content="KaRMA: A Kinematic Metric for Fine Manipulation Ability in Robotic Hands">
+<meta property="og:description" content="A kinematics-only dexterity metric for robotic hands, evaluated on 16 hands with an interactive 3D workspace explorer.">
+<meta property="og:url" content="https://martinpeticco.com/karma/">
+<meta property="og:image" content="https://martinpeticco.com/karma/static/images/social_preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="KaRMA: A Kinematic Metric for Fine Manipulation Ability in Robotic Hands">
+<meta name="twitter:description" content="A kinematics-only dexterity metric for robotic hands, evaluated on 16 hands with an interactive 3D workspace explorer.">
+<meta name="twitter:image" content="https://martinpeticco.com/karma/static/images/social_preview.png">
+
+<!-- Google Scholar -->
+<meta name="citation_title" content="A Kinematic Metric for Fine Manipulation Ability in Robotic Hands">
+<meta name="citation_author" content="Peticco, Martin">
+<meta name="citation_author" content="Agrawal, Pulkit">
+<meta name="citation_publication_date" content="2026">
+<meta name="citation_conference_title" content="IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)">
+<meta name="citation_arxiv_id" content="2605.15548">
+<meta name="citation_pdf_url" content="https://arxiv.org/pdf/2605.15548">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%8B</text></svg>">
+<link rel="canonical" href="https://martinpeticco.com/karma/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="static/css/index.css?v=12">
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org","@type":"ScholarlyArticle",
+  "headline":"A Kinematic Metric for Fine Manipulation Ability in Robotic Hands",
+  "author":[{"@type":"Person","name":"Martin Peticco"},{"@type":"Person","name":"Pulkit Agrawal"}],
+  "datePublished":"2026","publisher":{"@type":"Organization","name":"Improbable AI Lab, MIT"},
+  "url":"https://martinpeticco.com/karma/"
+}
+</script>
+
+<script type="importmap">
+{ "imports": { "three": "./static/js/vendor/three.module.min.js" } }
+</script>
+
+<!-- inline icon symbols -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 2h7l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm7 1.5V7h3.5L13 3.5z"/></symbol>
+<symbol id="i-gh" viewBox="0 0 24 24"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.8 18 5.1 18 5.1c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></symbol>
+<symbol id="i-quote" viewBox="0 0 24 24"><path d="M4 5h11v2H4zm0 4h16v2H4zm0 4h16v2H4zm0 4h11v2H4z"/></symbol>
+</defs></svg>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="venue">IROS 2026 · arXiv:2605.15548</div>
+    <h1>A Kinematic Metric for Fine Manipulation Ability in Robotic Hands</h1>
+    <p class="subtitle">KaRMA scores how well a robotic hand can move an object <em>within</em> its grasp, computed from the hand's kinematic model alone.</p>
+    <div class="authors">
+      <a href="https://martinpeticco.com" target="_blank" rel="noopener">Martin Peticco</a> &nbsp;·&nbsp; <a href="https://people.csail.mit.edu/pulkitag/" target="_blank" rel="noopener">Pulkit Agrawal</a>
+    </div>
+    <div class="affil">Improbable AI Lab, Massachusetts Institute of Technology</div>
+    <div class="links">
+      <a class="btn" href="https://arxiv.org/abs/2605.15548" target="_blank" rel="noopener"><svg><use href="#i-doc"/></svg>arXiv</a>
+      <a class="btn ghost" href="https://arxiv.org/pdf/2605.15548" target="_blank" rel="noopener"><svg><use href="#i-doc"/></svg>PDF</a>
+      <a class="btn ghost" href="https://github.com/mfpeticco/karma-hand-metric" target="_blank" rel="noopener"><svg><use href="#i-gh"/></svg>Code</a>
+      <a class="btn ghost" href="#bibtex"><svg><use href="#i-quote"/></svg>BibTeX</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PITCH ============ -->
+<section class="section">
+  <div class="wrap">
+    <p class="lead" style="font-size:1.12rem;color:var(--ink);max-width:52em">
+      Robotic hands are usually compared by simple proxies like degrees of freedom, <a href="https://doi.org/10.1007/s11370-019-00274-x" target="_blank" rel="noopener">fingertip workspace</a>, <a href="https://doi.org/10.1177/027836498500400201" target="_blank" rel="noopener">jacobian manipulability</a>, etc. However, none of these measure
+      dexterity in the sense most used in robotic manipulation: continuously changing an object's pose while holding it (<a href="https://doi.org/10.1109/70.897777" target="_blank" rel="noopener">Bicchi, 2000</a>). KaRMA aims to measure
+      exactly this. From a two-finger thumb–index pinch on a small sphere, it computes how far the hand can
+      <strong>move the object to new positions</strong> and <strong>reorient it</strong> under maintained contact / rolling. It
+      enforces joint limits, collisions, and force-closure. The result is three scores computed from a URDF,
+      without any conflating variables introduced in the lengthy process of turning a kinematic model into a full hand system, which involves building, training controllers, integrating sensors, etc.
+    </p>
+    <div class="score-cards">
+      <div class="score-card">
+        <div class="score-tag">KaRMA-T</div>
+        <div class="score-name">Translation reach</div>
+        <p>Reachable volume of in-hand object positions, normalized by hand size.</p>
+      </div>
+      <div class="score-card">
+        <div class="score-tag">KaRMA-R</div>
+        <div class="score-name">Rotation coverage</div>
+        <p>Share of orientations the object can be rolled into across that workspace.</p>
+      </div>
+      <div class="score-card">
+        <div class="score-tag">KaRMA-S</div>
+        <div class="score-name">Seed robustness</div>
+        <p>How much the result depends on the starting pinch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ HAND IN MOTION ============ -->
+<section class="section" id="motion">
+  <div class="wrap">
+    <h2>See a hand in motion</h2>
+    <p class="lead">This is what the two scores measure. From a thumb–index pinch, the hand reorients the sphere in
+      place, then rolls it out across the reachable workspace and back. Every pose is replayed from the metric run
+      itself, over the same voxel cloud the leaderboard scores. Pick a hand to watch.</p>
+    <div class="cmp-controls">
+      <label>hand
+        <select id="anim-hand" aria-label="Hand"></select>
+      </label>
+      <button class="anim-btn" id="anim-play" aria-pressed="true">Pause</button>
+      <span class="viewer-meta" id="anim-meta"></span>
+      <span class="legend-inline">rotation coverage
+        <span class="ramp"></span>
+        <span>0% – 25%+</span>
+      </span>
+    </div>
+    <div class="stage" id="anim-stage">
+      <div class="anim-mode" id="anim-mode"><span class="am-word" id="am-word"></span><span class="am-sub" id="am-sub"></span><span class="am-tag" id="am-tag"></span></div>
+      <div class="hint">drag to orbit · ⌘/Ctrl + scroll to zoom</div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ INTERACTIVE COMPARE ============ -->
+<section class="section">
+  <div class="wrap">
+    <h2>Compare two hands</h2>
+    <p class="lead">Each voxel is a position the hand can move the sphere to. The voxel's color is
+      how much the object can be reoriented there. Pick any two hands and drag, and the views rotate together.</p>
+    <p class="cmp-example">In the example below, Allegro's reachable set stays green (the object reorients freely
+      almost everywhere) while D'Claw's is mostly red despite a similar spread of positions. We can visually see translation reach does not imply rotation coverage. See the selected comparisons for other interesting results.</p>
+    <div class="cmp-controls">
+      <label>color scale
+        <select id="tg-color" aria-label="Color scale">
+          <option value="absolute">absolute (comparable)</option>
+          <option value="relative">per-hand</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="tg-hand" checked> show hands</label>
+      <label><input type="checkbox" id="tg-vox" checked> show voxels</label>
+      <label><input type="checkbox" id="tg-sync" checked> sync rotation</label>
+      <span class="legend-inline">rotation coverage
+        <span class="ramp"></span>
+        <span id="leg-ends">0% – 25%+ · comparable</span>
+      </span>
+    </div>
+    <div class="cmp-grid">
+      <div class="cmp-panel">
+        <div class="cmp-head"><select id="sel-a" aria-label="Left hand"></select><span class="viewer-meta" id="meta-a"></span></div>
+        <div class="stage" id="stage-a"><div class="hint">drag to orbit · ⌘/Ctrl + scroll to zoom</div></div>
+      </div>
+      <div class="cmp-panel">
+        <div class="cmp-head"><select id="sel-b" aria-label="Right hand"></select><span class="viewer-meta" id="meta-b"></span></div>
+        <div class="stage" id="stage-b"><div class="hint">drag to orbit · ⌘/Ctrl + scroll to zoom</div></div>
+      </div>
+    </div>
+
+    <details class="tryouts">
+      <summary>Selected comparisons</summary>
+      <p class="tryout-intro">Each entry loads its pair into the viewer above.</p>
+      <div class="tryout-list">
+        <button class="tryout" data-a="leap" data-b="allegro">
+          <span class="tryout-name">LEAP and Allegro</span>
+          <span class="tryout-sub">Reach versus reorientation ability</span>
+          <span class="tryout-note">LEAP has the highest translation reach (KaRMA-T=0.097) and Allegro has the highest rotation coverage (KaRMA-R=0.335). However, Allegro is second in translation reach but LEAP second in rotation coverage. This decoupling is not captured by traditional kinematic comparisons.</span>
+        </button>
+        <button class="tryout" data-a="allegro" data-b="dclaw">
+          <span class="tryout-name">Allegro and D'Claw</span>
+          <span class="tryout-sub">Green throughout versus mostly red</span>
+          <span class="tryout-note">Allegro and D'Claw reach a comparable spread of positions (445 and 315 voxels), but reorient the object at very different fractions of them. Allegro's cloud is compact, roughly round, and green almost throughout. D'Claw's is larger and irregular but mostly red: it reaches those positions yet reorients well at few of them, 13% of its voxels reaching high rotation coverage against Allegro's 53%. Their KaRMA-R scores differ far less (0.231 vs 0.335), because KaRMA-R averages only each hand's five best positions.</span>
+        </button>
+        <button class="tryout" data-a="shadowhand" data-b="dclaw">
+          <span class="tryout-name">Shadow and D'Claw</span>
+          <span class="tryout-sub">More joints =/= more reach</span>
+          <span class="tryout-note">Shadow has nine pinch DOF but low translation reach (KaRMA-T=0.013); the six-DOF D'Claw reaches nearly three times more (KaRMA-T=0.036). Shadow's tight joint limits confine the pinch to a thin slab. In this pinch, joint range mattered more than joint count.</span>
+        </button>
+        <button class="tryout" data-a="dclaw" data-b="xhand1">
+          <span class="tryout-name">D'Claw and xHand1</span>
+          <span class="tryout-sub">Equal DOFs yet way different workspace</span>
+          <span class="tryout-note">D'Claw and xHand1 are the only two six-DOF hands, yet their translation reach differs by an order of magnitude (KaRMA-T=0.036 against 0.004). D'Claw fills a full 3D volume, while xHand1's reachable set collapses to a near-flat plane, 91% of it in a single layer. The same joint counts produces opposite workspace dimensionality.</span>
+        </button>
+        <button class="tryout" data-a="dex3" data-b="DLR">
+          <span class="tryout-name">Dex3 and DLR</span>
+          <span class="tryout-sub">2D vs 3D manipulation manifolds</span>
+          <span class="tryout-note">Dex3's reachable set is one voxel thick, a flat sheet rather than a volume. With a five-DOF pinch holding two contacts, one translation direction is unavailable everywhere, so its translation reach (KaRMA-T=0.004) is measured across a 2D manifold. DLR keeps a full three-dimensional volume (KaRMA-T=0.008).</span>
+        </button>
+      </div>
+    </details>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ LEADERBOARD ============ -->
+<section class="section">
+  <div class="wrap">
+    <h2>16 hand comparison</h2>
+    <p class="lead">KaRMA-T spans two orders of magnitude across these hands, and the two abilities it separates,
+      translation and rotation, do not always agree (as we saw above): LEAP has the widest reach, Allegro reorients best while ranking only second in reach, and the 6-DOF D'Claw beats the 9-DOF Shadow by roughly three times.</p>
+
+    <div class="lb-toolbar">
+      <span class="label">Rank by</span>
+      <button class="sort-btn active" data-sort="t">KaRMA-T</button>
+      <button class="sort-btn" data-sort="r">KaRMA-R</button>
+      <button class="sort-btn" data-sort="s">KaRMA-S</button>
+      <span class="spacer"></span>
+      <button class="toggle-cols" id="toggle-cols">show all baselines</button>
+    </div>
+    <div class="lb-scroll">
+      <table class="lb" id="lb">
+        <thead><tr>
+          <th class="rank">#</th>
+          <th class="hand">Hand</th>
+          <th data-k="dof">DOF</th>
+          <th class="lb-col-extra" data-k="lref">L<sub>ref</sub> (mm)</th>
+          <th class="lb-col-extra" data-k="range">Tot. range</th>
+          <th class="lb-col-extra" data-k="thumbws"><a href="https://doi.org/10.1177/027836498600400401" target="_blank" rel="noopener">Thumb WS</a></th>
+          <th data-k="oppos"><a href="https://doi.org/10.1007/s11370-019-00274-x" target="_blank" rel="noopener">Opposability</a></th>
+          <th class="lb-col-extra" data-k="yosh"><a href="https://doi.org/10.1177/027836498500400201" target="_blank" rel="noopener">Yoshikawa</a></th>
+          <th class="lb-col-extra" data-k="gci"><a href="https://doi.org/10.1115/1.2912772" target="_blank" rel="noopener">GCI</a></th>
+          <th data-k="t">KaRMA-T</th>
+          <th data-k="r">KaRMA-R</th>
+          <th data-k="s">KaRMA-S</th>
+        </tr></thead>
+        <tbody id="lb-body"></tbody>
+      </table>
+    </div>
+    <p class="lb-note"><span class="dag">†</span> marks the five hands with two or fewer index DOF and zero
+      fingertip-workspace overlap (opposability 0). They score nonzero only because the fingers roll the sphere along a
+      lower-dimensional path, and unlike the other eleven they cannot move the object by rolling alone: they need 11 to
+      32 percent sliding at the contact, with no hand in between, so the † falls out of the data rather than a chosen
+      cutoff. KaRMA-S is shown as — for the three hands with fewer than ten reachable voxels (Inspire, SVH, Ability).
+      All values reproduce Table I of the paper.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <figure class="fig" style="margin-bottom:22px">
+      <img src="static/images/metric_overview.png" alt="KaRMA pipeline: seed generation, translation breadth-first search, rotation exploration, scoring" loading="lazy">
+      <figcaption>The KaRMA pipeline. Feasible pinch grasps are found, a breadth-first search rolls the sphere to
+        new positions, rotation is explored at each position, and three scores are computed.</figcaption>
+    </figure>
+    <div class="two-col">
+      <div>
+        <p><strong>1. Seed grasps.</strong> Candidate thumb–index pinches are generated deterministically and projected
+          onto the two-contact manifold with inverse kinematics. Every feasible seed is evaluated.</p>
+        <p><strong>2. Translation search.</strong> From each seed, a breadth-first search rolls the sphere along the
+          principal axes of the grasp. Each step solves a small <a href="https://doi.org/10.1177/027836498800700302" target="_blank" rel="noopener">rolling-contact</a> quadratic program and checks joint
+          limits, collisions, and antipodal force feasibility.</p>
+        <p><strong>3. Rotation exploration.</strong> At every reached position, the sphere is tilted about its two
+          controllable axes, recording how many of 228 equal-area orientation bins (<a href="https://doi.org/10.1086/427976" target="_blank" rel="noopener">HEALPix</a>) are reachable.</p>
+        <p><strong>4. Scoring.</strong> Reachable volume gives KaRMA-T, orientation coverage gives KaRMA-R, and the
+          spread across seeds gives KaRMA-S. Lengths are non-dimensionalized by a hand-size constant so scores compare
+          across hands. See the <a href="https://arxiv.org/abs/2605.15548" target="_blank" rel="noopener">paper</a> for the full formulation.</p>
+      </div>
+      <figure class="fig">
+        <img src="static/images/metric_method.png" alt="Pinch grasp setup: capsule finger links, sphere, contact normals, pinch axis, and motion primitives" loading="lazy">
+        <figcaption>The pinch setup: capsule finger links, the rolling-contact sphere, contact normals, the
+          twist-invariant pinch axis, and the translation and rotation primitives.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ WHAT THE SCORES MEAN ============ -->
+<section class="section">
+  <div class="wrap">
+    <h2>What the scores mean</h2>
+    <div style="max-width:54em">
+      <p>KaRMA-S is the ratio of a hand's median grasp to its best grasp, showing whether the hand's performance is an upper bound concentrated at a specific, narrow window of initial grasps, or if most grasps will do that well. D'Claw ranks third in KaRMA-T, but its median pinch reaches only about a quarter of its best, so its reach depends on selecting <strong>just</strong> the right grasp. Allegro ranks second, and its median pinch reaches more than half of its best, so most all the initial grasps perform close to the best grasp.</p>
+      <p>Rolling from a single grasp reorients the object only so far. Even the most capable hand, at its best
+        position, reaches only about a third of all orientations of the pinch axis, and most hands reach far less.
+        This ceiling is why in-hand manipulation can sometimes require cumbersome regrasping and finger-gaiting, and more on some hands versus others. KaRMA measures how far a hand gets from one fixed grasp, before either.</p>
+      <p>KaRMA-R scores a hand's strongest reorientation, the mean coverage of its five best positions. How far that
+        ability spreads across the rest of the workspace is a separate question, and KaRMA's per-voxel map answers it
+        directly. Sharpa and Wuji post the same KaRMA-T and nearly the same KaRMA-R, yet high rotation coverage reaches
+        27 percent of Sharpa's positions and only 9 percent of Wuji's. The score gives the best a hand can do, and the
+        map shows how much of the workspace reaches it.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ WHY TRUST IT ============ -->
+<section class="section">
+  <div class="wrap">
+    <h2>Findings</h2>
+    <div class="two-col">
+      <div>
+        <p>Translation and rotation correlate overall (Spearman ρ = 0.96), but the mid-table hands split in
+          task-relevant ways: Allegro reorients well while repositioning less, and LEAP does the opposite. No
+          baseline predicts which way a given hand will lean.</p>
+        <p>Workspace opposability tracks KaRMA-T reasonably (ρ = 0.93) but still misranks a quarter of the hands
+          by two or more positions, and the Jacobian-based measures do not track it at all (Yoshikawa ρ = −0.20,
+          global conditioning index ρ = −0.08). A low-DOF hand like Ability has a trivially well-conditioned
+          Jacobian and the highest GCI, yet ranks last in KaRMA.</p>
+        <p>The scores are invariant to translating, rotating, or uniformly rescaling the hand model, and are
+          identical bit-for-bit across runs. Where task benchmarks exist (<a href="https://arxiv.org/abs/2505.24853" target="_blank" rel="noopener">DexMachina</a>, <a href="https://arxiv.org/abs/2509.26236" target="_blank" rel="noopener">ISyHand</a>), KaRMA agrees with
+          them in the directions simple proxies miss.</p>
+        <p>Dividing by hand size cubed keeps a larger hand from scoring higher for scale alone: the largest hand,
+          D'Claw at 327 mm, ranks only third, and the 177 mm Wuji outscores the larger DLR. Size still correlates
+          with KaRMA-T (ρ = 0.71), but as a proxy for the joint count and range that larger research hands tend to
+          carry, not for scale itself.</p>
+      </div>
+      <div>
+        <p>Adding the constraints one at a time to the raw contact-gap search shows that joint limits remove most
+          of the naive workspace. Each cell is KaRMA-T, the fraction of an L<sub>ref</sub> cube filled:</p>
+        <table class="mini">
+          <thead><tr><th>Hand</th><th>Gap</th><th>+JL</th><th>+Col</th><th>Full</th></tr></thead>
+          <tbody>
+            <tr><td>LEAP</td><td>0.580</td><td>0.241</td><td>0.123</td><td>0.099</td></tr>
+            <tr><td>Shadow</td><td>0.509</td><td>0.016</td><td>0.016</td><td>0.014</td></tr>
+            <tr><td>xHand1</td><td>0.781</td><td>0.007</td><td>0.007</td><td>0.004</td></tr>
+            <tr><td>Dex3</td><td>0.007</td><td>0.004</td><td>0.004</td><td>0.004</td></tr>
+            <tr><td>Inspire</td><td>0.0005</td><td>0.0005</td><td>0.0005</td><td>0.0005</td></tr>
+          </tbody>
+        </table>
+        <p class="lb-note">Joint limits alone cut the unconstrained workspace by 58–99% for the non-floor hands. Inspire
+          is limited by kinematic infeasibility, not constraints, so its four voxels survive every level.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ SCOPE ============ -->
+<section class="section">
+  <div class="wrap">
+    <h2>Scope</h2>
+    <p style="max-width:52em">KaRMA is a standardized lower bound on thumb–index rolling-pinch dexterity, not a
+      universal dexterity score. It looks at one <a href="https://doi.org/10.1109/THMS.2015.2470657" target="_blank" rel="noopener">two-finger pinch</a> on a sphere under maintained rolling contact, with
+      no regrasping or finger gaiting, and uses kinematics only. Those assumptions make hands comparable but mean the
+      metric does not on its own predict task success on arbitrary objects. It is meant to complement full task
+      benchmarks, for hand procurement and kinematic design iteration.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ RUN IT ============ -->
+<section class="section">
+  <div class="wrap">
+    <h2>Run it on your hand</h2>
+    <p class="lead">KaRMA is CPU-only, needs no training, and evaluates a hand in seconds to a few minutes from its URDF.
+      All 16 hands run in under 18 minutes on a desktop.</p>
+    <div class="copy-row"><button class="copy-btn" data-copy="#run">Copy</button></div>
+    <pre id="run"><code>git clone https://github.com/mfpeticco/karma-hand-metric
+cd karma-hand-metric
+conda env create -f environment.yml &amp;&amp; conda activate karma-hand-metric
+
+# score a bundled hand
+python run_metric.py --config robots/robot_leap.yaml
+
+# add your own: drop a URDF in robots/urdfs/, copy robot_template.yaml,
+# fill in the thumb/index chains, then run_metric.py --config your_hand.yaml</code></pre>
+    <p style="color:var(--muted)">Full instructions, the 16 hand configs, and every result file are in the
+      <a href="https://github.com/mfpeticco/karma-hand-metric" target="_blank" rel="noopener">code repository</a>.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ BIBTEX ============ -->
+<section class="section" id="bibtex">
+  <div class="wrap">
+    <h2>Citation</h2>
+    <div class="copy-row"><button class="copy-btn" data-copy="#bib">Copy</button></div>
+    <pre id="bib"><code>@inproceedings{peticco2026karma,
+  title     = {A Kinematic Metric for Fine Manipulation Ability in Robotic Hands},
+  author    = {Peticco, Martin and Agrawal, Pulkit},
+  booktitle = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  year      = {2026}
+}</code></pre>
+    <h3 style="font-size:1.05rem;margin:24px 0 6px">Acknowledgments</h3>
+    <p style="color:var(--muted);margin-top:0">Supported in part by the Ministry of Trade, Industry, and Energy (MOTIE),
+      Korea, under the Global Industrial Technology Cooperation Center program supervised by KIAT (Grant P0028435); by
+      PEGATRON Corporation under the 2026–2030 MIT-PEGATRON Prometheus Research Collaboration Program; and by Analog
+      Devices Inc. We thank the Improbable AI Lab for helpful discussions.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="https://martinpeticco.com" target="_blank" rel="noopener">martinpeticco.com</a> &nbsp;·&nbsp;
+    <a href="https://arxiv.org/abs/2605.15548" target="_blank" rel="noopener">arXiv</a> &nbsp;·&nbsp;
+    <a href="https://github.com/mfpeticco/karma-hand-metric" target="_blank" rel="noopener">Code</a> &nbsp;·&nbsp;
+    Improbable AI Lab, MIT
+  </div>
+</footer>
+
+<!-- ============ DATA + SCRIPTS ============ -->
+<script id="lb-data" type="application/json">
+[
+{"name":"LEAP","dof":8,"lref":249.4,"range":21.11,"thumbws":0.683,"oppos":0.230,"yosh":6.32e-8,"gci":0.102,"t":0.096917,"r":0.303801,"s":0.4482,"dag":false},
+{"name":"Allegro","dof":8,"lref":222.5,"range":12.59,"thumbws":0.221,"oppos":0.053,"yosh":9.87e-8,"gci":0.151,"t":0.054667,"r":0.334795,"s":0.5416,"dag":false},
+{"name":"D'Claw","dof":6,"lref":327.2,"range":16.25,"thumbws":0.315,"oppos":0.117,"yosh":2.60e-7,"gci":0.083,"t":0.036417,"r":0.230702,"s":0.2254,"dag":false},
+{"name":"Sharpa","dof":9,"lref":188.3,"range":12.74,"thumbws":0.283,"oppos":0.070,"yosh":4.34e-8,"gci":0.150,"t":0.034042,"r":0.247076,"s":0.3690,"dag":false},
+{"name":"Wuji","dof":8,"lref":176.6,"range":13.21,"thumbws":0.210,"oppos":0.057,"yosh":1.62e-8,"gci":0.117,"t":0.033917,"r":0.233333,"s":0.3516,"dag":false},
+{"name":"Shadow","dof":9,"lref":184.8,"range":12.64,"thumbws":0.178,"oppos":0.033,"yosh":1.00e-8,"gci":0.107,"t":0.013125,"r":0.160526,"s":0.2091,"dag":false},
+{"name":"ARMS","dof":8,"lref":171.3,"range":11.17,"thumbws":0.106,"oppos":0.017,"yosh":8.52e-9,"gci":0.115,"t":0.011792,"r":0.149415,"s":0.3438,"dag":false},
+{"name":"Dex5","dof":8,"lref":185.9,"range":11.91,"thumbws":0.354,"oppos":0.036,"yosh":9.86e-9,"gci":0.112,"t":0.009250,"r":0.173099,"s":0.1948,"dag":false},
+{"name":"DLR","dof":9,"lref":204.5,"range":14.15,"thumbws":0.176,"oppos":0.012,"yosh":1.18e-8,"gci":0.082,"t":0.008083,"r":0.158480,"s":0.5556,"dag":false},
+{"name":"Dex3","dof":5,"lref":155.3,"range":8.80,"thumbws":0.308,"oppos":0.000,"yosh":1.09e-7,"gci":0.097,"t":0.004042,"r":0.094444,"s":0.0588,"dag":true},
+{"name":"xHand1","dof":6,"lref":190.8,"range":9.86,"thumbws":0.349,"oppos":0.014,"yosh":9.82e-9,"gci":0.091,"t":0.003458,"r":0.097368,"s":0.0938,"dag":false},
+{"name":"OrcaHand","dof":7,"lref":168.9,"range":12.69,"thumbws":0.259,"oppos":0.007,"yosh":5.58e-9,"gci":0.082,"t":0.002875,"r":0.136842,"s":0.3200,"dag":false},
+{"name":"xHandLite","dof":5,"lref":170.0,"range":7.61,"thumbws":0.094,"oppos":0.000,"yosh":6.29e-8,"gci":0.091,"t":0.002042,"r":0.061404,"s":0.0588,"dag":true},
+{"name":"Inspire","dof":3,"lref":155.4,"range":3.60,"thumbws":0.041,"oppos":0.000,"yosh":1.55e-3,"gci":0.208,"t":0.000417,"r":0.004386,"s":null,"dag":true},
+{"name":"SVH","dof":4,"lref":182.9,"range":4.09,"thumbws":0.036,"oppos":0.000,"yosh":1.88e-5,"gci":0.133,"t":0.000375,"r":0.010234,"s":null,"dag":true},
+{"name":"Ability","dof":3,"lref":158.9,"range":6.28,"thumbws":0.089,"oppos":0.000,"yosh":3.67e-4,"gci":0.376,"t":0.000292,"r":0.004386,"s":null,"dag":true}
+]
+</script>
+
+<script>
+(function(){
+  var data = JSON.parse(document.getElementById('lb-data').textContent);
+  var body = document.getElementById('lb-body');
+  var table = document.getElementById('lb');
+  function fmtT(v){ return v < 0.001 ? v.toFixed(4) : v.toFixed(3); }
+  function cell(v, cls){ return '<td'+(cls?' class="'+cls+'"':'')+'>'+v+'</td>'; }
+  function render(sortKey){
+    var rows = data.slice().sort(function(a,b){
+      var av=a[sortKey], bv=b[sortKey];
+      if(av===null) return 1; if(bv===null) return -1;
+      return bv-av;
+    });
+    body.innerHTML = rows.map(function(d,i){
+      var name = d.name + (d.dag?' <span class="dag">†</span>':'');
+      return '<tr>'
+        + cell(i+1,'rank')
+        + '<td class="hand">'+name+'</td>'
+        + cell(d.dof)
+        + cell(d.lref.toFixed(1),'lb-col-extra')
+        + cell(d.range.toFixed(2),'lb-col-extra')
+        + cell(d.thumbws.toFixed(3),'lb-col-extra')
+        + cell(d.oppos.toFixed(3))
+        + cell(d.yosh.toExponential(1).replace('e','e'),'lb-col-extra')
+        + cell(d.gci.toFixed(3),'lb-col-extra')
+        + cell(fmtT(d.t))
+        + cell(d.r.toFixed(3))
+        + cell(d.s===null?'—':d.s.toFixed(2))
+        + '</tr>';
+    }).join('');
+  }
+  render('t');
+  var btns = document.querySelectorAll('.sort-btn');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      btns.forEach(function(x){x.classList.remove('active')});
+      b.classList.add('active');
+      render(b.getAttribute('data-sort'));
+    });
+  });
+  document.getElementById('toggle-cols').addEventListener('click', function(){
+    var on = table.classList.toggle('show-extra');
+    this.textContent = on ? 'hide baselines' : 'show all baselines';
+  });
+
+  // clicking a row loads that hand into the compare view (left panel)
+  body.addEventListener('click', function(ev){
+    var tr = ev.target.closest('tr'); if(!tr) return;
+    var hc = tr.querySelector('td.hand'); if(!hc) return;
+    var name = hc.textContent.replace('†','').trim();
+    var cmp = window.karmaCompare;
+    var id = cmp && cmp.labelToId && cmp.labelToId[name];
+    if(id && cmp) cmp.loadLeft(id);
+  });
+
+  // copy buttons
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.querySelector(btn.getAttribute('data-copy'));
+      navigator.clipboard.writeText(el.innerText).then(function(){
+        var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function(){btn.textContent=t;}, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+<script type="module">
+  import { createViewer, loadScenes } from "./static/js/karma_viewer.js?v=6";
+  const scenes = await loadScenes('./static/scenes/scenes.json');
+  const A = await createViewer({ mount: document.getElementById('stage-a'), scenes });
+  const B = await createViewer({ mount: document.getElementById('stage-b'), scenes });
+
+  const selA = document.getElementById('sel-a'), selB = document.getElementById('sel-b');
+  const metaA = document.getElementById('meta-a'), metaB = document.getElementById('meta-b');
+  const order = A.hands().sort((a,b) => b.t - a.t);
+  const labelToId = {};
+  for (const h of order){
+    labelToId[h.label] = h.id;
+    for (const sel of [selA, selB]){
+      const o = document.createElement('option'); o.value = h.id; o.textContent = h.label; sel.appendChild(o);
+    }
+  }
+  const fmtT = (v) => v < 0.001 ? v.toFixed(4) : v.toFixed(3);
+  const metaText = (m) => `${m.dof} DOF · T ${fmtT(m.karma_t)} · R ${m.karma_r.toFixed(3)} · ${m.n_voxels} voxels`;
+  function showA(id){ selA.value = id; A.show(id); metaA.textContent = metaText(A.meta(id)); }
+  function showB(id){ selB.value = id; B.show(id); metaB.textContent = metaText(B.meta(id)); }
+  selA.addEventListener('change', e => showA(e.target.value));
+  selB.addEventListener('change', e => showB(e.target.value));
+
+  // shared controls
+  const legEnds = document.getElementById('leg-ends');
+  const tgColor = document.getElementById('tg-color');
+  function updColorLegend(){
+    legEnds.textContent = tgColor.value === 'absolute'
+      ? '0% – 25%+ · comparable' : 'scaled per hand · not comparable';
+  }
+  document.getElementById('tg-hand').addEventListener('change', e => { A.setShowHand(e.target.checked); B.setShowHand(e.target.checked); });
+  document.getElementById('tg-vox').addEventListener('change', e => { A.setShowVoxels(e.target.checked); B.setShowVoxels(e.target.checked); });
+  tgColor.addEventListener('change', e => { A.setColorMode(e.target.value); B.setColorMode(e.target.value); updColorLegend(); });
+
+  // rotate both views together
+  const tgSync = document.getElementById('tg-sync');
+  let syncing = false;
+  function link(src, dst){
+    src.onChange(() => {
+      if (!tgSync.checked || syncing) return;
+      syncing = true; dst.setDir(src.getDir()); syncing = false;
+    });
+  }
+  link(A, B); link(B, A);
+
+  // defaults: the striking translation/rotation mismatch
+  showA('dclaw'); showB('allegro'); updColorLegend();
+
+  // let the leaderboard load a hand into the left panel
+  window.karmaCompare = { loadLeft: (id) => {
+    showA(id);
+    document.getElementById('stage-a').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, labelToId };
+
+  // "comparisons worth trying" presets: load a pair, force the comparable color
+  // scale so the color captions stay honest, and bring the viewer into view.
+  document.querySelectorAll('.tryout').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tgColor.value = 'absolute';
+      tgColor.dispatchEvent(new Event('change'));
+      showA(btn.dataset.a); showB(btn.dataset.b);
+      document.querySelector('.cmp-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+</script>
+
+<script type="module">
+  import { createAnimViewer, loadAnimIndex } from "./static/js/karma_anim.js?v=8";
+  // The on-figure label switches in sync with the act: the big word names which KaRMA
+  // measure the motion shows; the subtitle describes the motion and its score.
+  const modeInfo = {
+    reorient: ["Rotation", "reorienting in place", "KaRMA-R"],
+    travel: ["Translation", "rolling across the workspace", "KaRMA-T"],
+  };
+  const selH = document.getElementById('anim-hand');
+  const playBtn = document.getElementById('anim-play');
+  const metaEl = document.getElementById('anim-meta');
+  const modeWord = document.getElementById('am-word');
+  const modeSub = document.getElementById('am-sub');
+  const modeTag = document.getElementById('am-tag');
+  const fmtT = (v) => v < 0.001 ? v.toFixed(4) : v.toFixed(3);
+
+  const viewer = await createAnimViewer({
+    mount: document.getElementById('anim-stage'),
+    onAct: (name) => {
+      const mi = modeInfo[name];
+      modeWord.textContent = mi ? mi[0] : "";
+      modeSub.textContent = mi ? mi[1] : "";
+      modeTag.textContent = mi ? mi[2] : "";
+    },
+  });
+  const index = await loadAnimIndex('./static/anim/index.json');
+  for (const h of index){
+    const o = document.createElement('option'); o.value = h.id; o.textContent = h.label; selH.appendChild(o);
+  }
+  async function pick(id){
+    selH.value = id;
+    const d = await viewer.loadHand(id);
+    metaEl.textContent = `${d.dof} DOF · T ${fmtT(d.karma_t)} · R ${d.karma_r.toFixed(3)} · ${d.n_voxels} voxels`;
+  }
+  selH.addEventListener('change', e => pick(e.target.value));
+  playBtn.addEventListener('click', () => {
+    const p = !viewer.isPlaying();
+    viewer.setPlaying(p);
+    playBtn.textContent = p ? 'Pause' : 'Play';
+    playBtn.setAttribute('aria-pressed', String(p));
+  });
+  await pick(index[0].id);   // LEAP — top of the index by KaRMA-T
+</script>
+
+</body>
+</html>
