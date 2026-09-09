@@ -29,12 +29,9 @@
 <meta name="citation_arxiv_id" content="2605.15548">
 <meta name="citation_pdf_url" content="https://arxiv.org/pdf/2605.15548">
 
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%8B</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%91%8C</text></svg>">
 <link rel="canonical" href="https://martinpeticco.com/karma/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="static/css/index.css?v=12">
+<link rel="stylesheet" href="static/css/index.css?v=14">
 
 <script type="application/ld+json">
 {
@@ -63,8 +60,7 @@
 <header class="hero">
   <div class="wrap">
     <div class="venue">IROS 2026 · arXiv:2605.15548</div>
-    <h1>A Kinematic Metric for Fine Manipulation Ability in Robotic Hands</h1>
-    <p class="subtitle">KaRMA scores how well a robotic hand can move an object <em>within</em> its grasp, computed from the hand's kinematic model alone.</p>
+    <h1><strong>KaRMA:</strong> A Kinematic Metric for Fine Manipulation Ability in Robotic Hands</h1>
     <div class="authors">
       <a href="https://martinpeticco.com" target="_blank" rel="noopener">Martin Peticco</a> &nbsp;·&nbsp; <a href="https://people.csail.mit.edu/pulkitag/" target="_blank" rel="noopener">Pulkit Agrawal</a>
     </div>
@@ -79,9 +75,10 @@
 </header>
 
 <!-- ============ PITCH ============ -->
-<section class="section">
+<section class="section motivation">
   <div class="wrap">
-    <p class="lead" style="font-size:1.12rem;color:var(--ink);max-width:52em">
+    <p class="motivation-summary"><strong>KaRMA</strong> scores how well a robotic hand can move an object <em>within</em> its grasp, computed from the hand's kinematic model alone.</p>
+    <p class="motivation-copy">
       Robotic hands are usually compared by simple proxies like degrees of freedom, <a href="https://doi.org/10.1007/s11370-019-00274-x" target="_blank" rel="noopener">fingertip workspace</a>, <a href="https://doi.org/10.1177/027836498500400201" target="_blank" rel="noopener">jacobian manipulability</a>, etc. However, none of these measure
       dexterity in the sense most used in robotic manipulation: continuously changing an object's pose while holding it (<a href="https://doi.org/10.1109/70.897777" target="_blank" rel="noopener">Bicchi, 2000</a>). KaRMA aims to measure
       exactly this. From a two-finger thumb–index pinch on a small sphere, it computes how far the hand can
@@ -237,7 +234,7 @@
           <th class="lb-col-extra" data-k="lref">L<sub>ref</sub> (mm)</th>
           <th class="lb-col-extra" data-k="range">Tot. range</th>
           <th class="lb-col-extra" data-k="thumbws"><a href="https://doi.org/10.1177/027836498600400401" target="_blank" rel="noopener">Thumb WS</a></th>
-          <th data-k="oppos"><a href="https://doi.org/10.1007/s11370-019-00274-x" target="_blank" rel="noopener">Opposability</a></th>
+          <th data-k="oppos">Opposability</th>
           <th class="lb-col-extra" data-k="yosh"><a href="https://doi.org/10.1177/027836498500400201" target="_blank" rel="noopener">Yoshikawa</a></th>
           <th class="lb-col-extra" data-k="gci"><a href="https://doi.org/10.1115/1.2912772" target="_blank" rel="noopener">GCI</a></th>
           <th data-k="t">KaRMA-T</th>
@@ -264,7 +261,7 @@
     <h2>How it works</h2>
     <figure class="fig" style="margin-bottom:22px">
       <img src="static/images/metric_overview.png" alt="KaRMA pipeline: seed generation, translation breadth-first search, rotation exploration, scoring" loading="lazy">
-      <figcaption>The KaRMA pipeline. Feasible pinch grasps are found, a breadth-first search rolls the sphere to
+      <figcaption><strong>The KaRMA pipeline.</strong> Feasible pinch grasps are found, a breadth-first search rolls the sphere to
         new positions, rotation is explored at each position, and three scores are computed.</figcaption>
     </figure>
     <div class="two-col">
@@ -282,7 +279,7 @@
       </div>
       <figure class="fig">
         <img src="static/images/metric_method.png" alt="Pinch grasp setup: capsule finger links, sphere, contact normals, pinch axis, and motion primitives" loading="lazy">
-        <figcaption>The pinch setup: capsule finger links, the rolling-contact sphere, contact normals, the
+        <figcaption><strong>The pinch setup:</strong> capsule finger links, the rolling-contact sphere, contact normals, the
           twist-invariant pinch axis, and the translation and rotation primitives.</figcaption>
       </figure>
     </div>
@@ -335,6 +332,7 @@
       <div>
         <p>Adding the constraints one at a time to the raw contact-gap search shows that joint limits remove most
           of the naive workspace. Each cell is KaRMA-T, the fraction of an L<sub>ref</sub> cube filled:</p>
+        <div class="table-scroll">
         <table class="mini">
           <thead><tr><th>Hand</th><th>Gap</th><th>+JL</th><th>+Col</th><th>Full</th></tr></thead>
           <tbody>
@@ -345,6 +343,7 @@
             <tr><td>Inspire</td><td>0.0005</td><td>0.0005</td><td>0.0005</td><td>0.0005</td></tr>
           </tbody>
         </table>
+        </div>
         <p class="lb-note">Joint limits alone cut the unconstrained workspace by 58–99% for the non-floor hands. Inspire
           is limited by kinematic infeasibility, not constraints, so its four voxels survive every level.</p>
       </div>
@@ -374,6 +373,7 @@
     <h2>Run it on your hand</h2>
     <p class="lead">KaRMA is CPU-only, needs no training, and evaluates a hand in seconds to a few minutes from its URDF.
       All 16 hands run in under 18 minutes on a desktop.</p>
+    <div class="code-block">
     <div class="copy-row"><button class="copy-btn" data-copy="#run">Copy</button></div>
     <pre id="run"><code>git clone https://github.com/mfpeticco/karma-hand-metric
 cd karma-hand-metric
@@ -384,6 +384,7 @@ python run_metric.py --config robots/robot_leap.yaml
 
 # add your own: drop a URDF in robots/urdfs/, copy robot_template.yaml,
 # fill in the thumb/index chains, then run_metric.py --config your_hand.yaml</code></pre>
+    </div>
     <p style="color:var(--muted)">Full instructions, the 16 hand configs, and every result file are in the
       <a href="https://github.com/mfpeticco/karma-hand-metric" target="_blank" rel="noopener">code repository</a>.</p>
   </div>
@@ -395,6 +396,7 @@ python run_metric.py --config robots/robot_leap.yaml
 <section class="section" id="bibtex">
   <div class="wrap">
     <h2>Citation</h2>
+    <div class="code-block">
     <div class="copy-row"><button class="copy-btn" data-copy="#bib">Copy</button></div>
     <pre id="bib"><code>@inproceedings{peticco2026karma,
   title     = {A Kinematic Metric for Fine Manipulation Ability in Robotic Hands},
@@ -402,7 +404,8 @@ python run_metric.py --config robots/robot_leap.yaml
   booktitle = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
   year      = {2026}
 }</code></pre>
-    <h3 style="font-size:1.05rem;margin:24px 0 6px">Acknowledgments</h3>
+    </div>
+    <h3>Acknowledgments</h3>
     <p style="color:var(--muted);margin-top:0">Supported in part by the Ministry of Trade, Industry, and Energy (MOTIE),
       Korea, under the Global Industrial Technology Cooperation Center program supervised by KIAT (Grant P0028435); by
       PEGATRON Corporation under the 2026–2030 MIT-PEGATRON Prometheus Research Collaboration Program; and by Analog
@@ -559,7 +562,7 @@ python run_metric.py --config robots/robot_leap.yaml
   // let the leaderboard load a hand into the left panel
   window.karmaCompare = { loadLeft: (id) => {
     showA(id);
-    document.getElementById('stage-a').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('stage-a').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
   }, labelToId };
 
   // "comparisons worth trying" presets: load a pair, force the comparable color
@@ -569,7 +572,7 @@ python run_metric.py --config robots/robot_leap.yaml
       tgColor.value = 'absolute';
       tgColor.dispatchEvent(new Event('change'));
       showA(btn.dataset.a); showB(btn.dataset.b);
-      document.querySelector('.cmp-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.querySelector('.cmp-grid').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
     });
   });
 </script>
@@ -615,6 +618,15 @@ python run_metric.py --config robots/robot_leap.yaml
     playBtn.textContent = p ? 'Pause' : 'Play';
     playBtn.setAttribute('aria-pressed', String(p));
   });
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function applyMotionPreference() {
+    const playing = !motionPreference.matches;
+    viewer.setPlaying(playing);
+    playBtn.textContent = playing ? 'Pause' : 'Play';
+    playBtn.setAttribute('aria-pressed', String(playing));
+  }
+  applyMotionPreference();
+  motionPreference.addEventListener('change', applyMotionPreference);
   await pick(index[0].id);   // LEAP — top of the index by KaRMA-T
 </script>
 
